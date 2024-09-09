@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayPal Payment</title>
+</head>
+<body>
+  <button id="paypal-button">Pay with PayPal</button>
+
+  <script>
+    document.getElementById('paypal-button').addEventListener('click', async () => {
+      try {
+        // Create order on the server
+        const orderResponse = await fetch('/create-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const orderData = await orderResponse.json();
+
+        // Capture order after approval
+        const captureResponse = await fetch('/capture-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderID: orderData.id }),
+        });
+
+        const captureData = await captureResponse.json();
+        console.log('Order captured:', captureData);
+      } catch (error) {
+        console.error('Payment failed:', error);
+      }
+    });
+  </script>
+</body>
+</html>
